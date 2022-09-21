@@ -38,6 +38,8 @@ class MaterialSegmentedControl<T> extends StatefulWidget {
   static const Color _kDisabledDefaultColor = Color(0xFFE0E0E0);
   static const Color _kSelectedDefaultColor = Color(0xFF4444FF);
   static const Color _kUnselectedDefaultColor = Color(0xFF565656);
+  static const Color _kSelectedTextColor = Color(0xFFFFFFFF);
+  static const Color _kUnSelectedTextColor = Color(0xFF000000);
 
   MaterialSegmentedControl({
     Key? key,
@@ -51,6 +53,8 @@ class MaterialSegmentedControl<T> extends StatefulWidget {
     this.selectedColor = _kSelectedDefaultColor,
     this.disabledColor = _kDisabledDefaultColor,
     this.unselectedColor = _kUnselectedDefaultColor,
+    this.selectedTextColor = _kSelectedTextColor,
+    this.unselectedTextColor = _kUnSelectedTextColor,
     this.horizontalPadding = _horizontalPadding,
   })  : assert(children.length >= 1),
         assert(
@@ -94,6 +98,15 @@ class MaterialSegmentedControl<T> extends StatefulWidget {
   /// The background color to use if a child is disabled
   /// by [disabledChildren]. Defaults to [Colors.grey].
   final Color? disabledColor;
+
+  /// Selected color.
+  ///
+  /// [Colors.white] by default if null
+  final Color? selectedTextColor;
+
+  /// The background color to use if a child is disabled
+  /// by [disabledChildren]. Defaults to [Colors.grey].
+  final Color? unselectedTextColor;
 
   /// Color used as border color.
   ///
@@ -176,8 +189,8 @@ class _SegmentedControlState<T> extends State<MaterialSegmentedControl<T>>
       _pressedColor = pressedColor;
     }
 
-    _selectedTextColor = _selectedColor;
-    _unselectedTextColor = _unselectedColor;
+    _selectedTextColor = widget.selectedTextColor ?? _selectedColor;
+    _unselectedTextColor = widget.unselectedTextColor ?? _unselectedColor;
 
     _forwardBackgroundColorTween = ColorTween(
       begin: _pressedColor,
@@ -188,8 +201,8 @@ class _SegmentedControlState<T> extends State<MaterialSegmentedControl<T>>
       end: _selectedColor,
     );
     _textColorTween = ColorTween(
-      begin: _selectedColor,
-      end: _unselectedColor,
+      begin: _unselectedTextColor,
+      end: _selectedTextColor,
     );
     return changed;
   }
@@ -280,8 +293,8 @@ class _SegmentedControlState<T> extends State<MaterialSegmentedControl<T>>
   Color? getTextColor(int index, T currentKey) {
     if (_selectionControllers[index].isAnimating)
       return _textColorTween.evaluate(_selectionControllers[index]);
-    if (widget.selectionIndex == currentKey) return _unselectedTextColor;
-    return _selectedTextColor;
+    if (widget.selectionIndex == currentKey) return _selectedTextColor;
+    return _unselectedTextColor;
   }
 
   Color? getBackgroundColor(int index, T currentKey) {
